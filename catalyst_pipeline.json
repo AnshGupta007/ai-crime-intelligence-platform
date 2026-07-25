@@ -1,0 +1,32 @@
+{
+    "pipeline": {
+        "name": "crime-intelligence-pipeline",
+        "source": {
+            "branch": "main"
+        },
+        "stages": [
+            {
+                "name": "Build and Deploy Frontend",
+                "steps": [
+                    {
+                        "type": "run",
+                        "command": "cd frontend && npm install && npm run build"
+                    },
+                    {
+                        "type": "deploy",
+                        "target": "client"
+                    }
+                ]
+            },
+            {
+                "name": "Build and Deploy Backend",
+                "steps": [
+                    {
+                        "type": "deploy",
+                        "target": "appsail"
+                    }
+                ]
+            }
+        ]
+    }
+}

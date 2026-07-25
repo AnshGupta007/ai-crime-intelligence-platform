@@ -872,7 +872,7 @@ class DataSeeder:
     async def _seed_repeat_offender_patterns(self):
         await self.db.execute(text("""
             INSERT INTO mo_patterns (accused_master_id, pattern_signature, associated_cases, first_seen, last_seen, evolution_score)
-            SELECT DISTINCT ON (q.accused_name)
+            SELECT
                 (SELECT accused_master_id FROM accused WHERE accused_name = q.accused_name LIMIT 1),
                 'repeat_offender',
                 q.case_ids,
@@ -882,7 +882,7 @@ class DataSeeder:
             FROM (
                 SELECT
                     a.accused_name,
-                    ARRAY_AGG(DISTINCT a.case_master_id) AS case_ids,
+                    GROUP_CONCAT(DISTINCT a.case_master_id) AS case_ids,
                     MIN(cm.crime_registered_date) AS first_seen,
                     MAX(cm.crime_registered_date) AS last_seen,
                     ROUND(COUNT(DISTINCT a.case_master_id) * 1.0 / 5, 2) AS score
@@ -891,6 +891,7 @@ class DataSeeder:
                 GROUP BY a.accused_name
                 HAVING COUNT(DISTINCT a.case_master_id) >= 2
             ) q
+            GROUP BY q.accused_name
         """))
         await self.db.commit()
 

@@ -6,13 +6,14 @@ from sqlalchemy import text
 
 from app.config import settings
 from app.database import engine, async_session_factory
+from app.models.base import Base
 from app.redis_client import close_redis
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
-        await conn.run_sync(lambda _: None)
+        await conn.run_sync(Base.metadata.create_all)
 
     async with async_session_factory() as session:
         result = await session.execute(text("SELECT COUNT(*) FROM case_masters"))

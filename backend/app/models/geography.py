@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, DECIMAL, Boolean, ForeignKey, text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, DECIMAL, Boolean, ForeignKey, Text
 
 from app.database import Base
 
@@ -20,7 +19,7 @@ class District(Base):
     district_name = Column(String(100))
     state_id = Column(Integer, ForeignKey("states.state_id"))
     active = Column(Boolean, default=True)
-    boundary_geojson = Column(JSONB)
+    boundary_geojson = Column(Text)
 
 
 class Unit(Base):

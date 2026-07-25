@@ -24,7 +24,7 @@ async def get_cases(
         conditions.append("cm.crime_major_head_id = :crime_head")
         params["crime_head"] = crime_head
     if search:
-        conditions.append("(cm.crime_no ILIKE :search OR cm.brief_facts ILIKE :search)")
+        conditions.append("(cm.crime_no LIKE :search OR cm.brief_facts LIKE :search)")
         params["search"] = f"%{search}%"
 
     where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
@@ -38,10 +38,10 @@ async def get_cases(
     total = (await db.execute(text(count_sql), params)).scalar() or 0
 
     data_sql = f"""
-        SELECT cm.case_master_id, cm.crime_no, cm.crime_registered_date::text,
+        SELECT cm.case_master_id, cm.crime_no, CAST(cm.crime_registered_date AS CHAR) AS crime_registered_date,
                csm.case_status_name AS fir_status, d.district_name,
                ch.crime_group_name AS crime_head_description,
-               cm.brief_facts, cm.latitude::float, cm.longitude::float
+               cm.brief_facts, CAST(cm.latitude AS DECIMAL(10,8)) AS latitude, CAST(cm.longitude AS DECIMAL(11,8)) AS longitude
         FROM case_masters cm
         JOIN units u ON cm.police_station_id = u.unit_id
         JOIN districts d ON u.district_id = d.district_id
@@ -63,8 +63,8 @@ async def get_cases(
             "district_name": r[4],
             "crime_head_description": r[5],
             "brief_facts": r[6],
-            "latitude": r[7],
-            "longitude": r[8],
+            "latitude": float(r[7]) if r[7] else None,
+            "longitude": float(r[8]) if r[8] else None,
         })
 
     return {"cases": cases, "total": total, "page": page, "limit": limit}
@@ -73,9 +73,11 @@ async def get_cases(
 async def get_case_detail(db: AsyncSession, case_id: int):
     row = (await db.execute(text("""
         SELECT cm.case_master_id, cm.crime_no, cm.case_no,
-               cm.crime_registered_date::text,
-               cm.incident_from_date::text, cm.incident_to_date::text,
-               cm.latitude::float, cm.longitude::float,
+               CAST(cm.crime_registered_date AS CHAR) AS crime_registered_date,
+               CAST(cm.incident_from_date AS CHAR) AS incident_from_date,
+               CAST(cm.incident_to_date AS CHAR) AS incident_to_date,
+               CAST(cm.latitude AS DECIMAL(10,8)) AS latitude,
+               CAST(cm.longitude AS DECIMAL(11,8)) AS longitude,
                cm.brief_facts,
                csm.case_status_name AS fir_status,
                d.district_name, u.unit_name AS police_station_name,
@@ -98,8 +100,8 @@ async def get_case_detail(db: AsyncSession, case_id: int):
         "crime_registered_date": row[3],
         "incident_from_date": row[4],
         "incident_to_date": row[5],
-        "latitude": row[6],
-        "longitude": row[7],
+        "latitude": float(row[6]) if row[6] else None,
+        "longitude": float(row[7]) if row[7] else None,
         "brief_facts": row[8],
         "fir_status": row[9],
         "district_name": row[10],

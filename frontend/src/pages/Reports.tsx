@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FileText, Download, Clock, CheckCircle2, XCircle } from "lucide-react";
 import ReportBuilder from "@/components/reports/ReportBuilder";
-import api from "@/lib/api";
+import api, { BASE_URL } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useToastStore } from "@/store/toast";
@@ -38,7 +38,7 @@ export default function Reports() {
   const handleDownload = useCallback(async (report: GeneratedReport) => {
     setDownloading(report.id);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/reports/${report.id}/download`, {
+      const res = await fetch(`${BASE_URL}/reports/${report.id}/download`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const blob = await res.blob();

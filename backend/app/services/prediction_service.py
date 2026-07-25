@@ -20,10 +20,10 @@ async def get_crime_forecast(db: AsyncSession, district_id: int | None, category
     where_clause = " AND " + " AND ".join(conditions) if conditions else ""
 
     rows = (await db.execute(text(f"""
-        SELECT crime_registered_date::text, COUNT(*)::int
+        SELECT CAST(crime_registered_date AS CHAR) AS crime_registered_date, COUNT(*) AS count
         FROM case_masters cm
         JOIN units u ON cm.police_station_id = u.unit_id
-        WHERE crime_registered_date >= CURRENT_DATE - INTERVAL '365 days'{where_clause}
+        WHERE crime_registered_date >= CURRENT_DATE - INTERVAL 365 DAY{where_clause}
         GROUP BY crime_registered_date
         ORDER BY crime_registered_date
     """), params)).fetchall()
@@ -65,11 +65,11 @@ async def get_risk_scores(db: AsyncSession):
         FROM districts d
         LEFT JOIN (SELECT u.district_id, COUNT(*) AS cnt
                    FROM case_masters cm JOIN units u ON cm.police_station_id = u.unit_id
-                   WHERE cm.crime_registered_date >= CURRENT_DATE - INTERVAL '30 days'
+                   WHERE cm.crime_registered_date >= CURRENT_DATE - INTERVAL 30 DAY
                    GROUP BY u.district_id) c30 ON d.district_id = c30.district_id
-        LEFT JOIN (SELECT u.district_id, COUNT(*)::numeric / 3 AS cnt
+        LEFT JOIN (SELECT u.district_id, COUNT(*) / 3 AS cnt
                    FROM case_masters cm JOIN units u ON cm.police_station_id = u.unit_id
-                   WHERE cm.crime_registered_date >= CURRENT_DATE - INTERVAL '90 days'
+                   WHERE cm.crime_registered_date >= CURRENT_DATE - INTERVAL 90 DAY
                    GROUP BY u.district_id) c90 ON d.district_id = c90.district_id
         LEFT JOIN (SELECT district_id, COUNT(*) AS cnt
                    FROM crime_hotspots GROUP BY district_id) h ON d.district_id = h.district_id
@@ -112,11 +112,11 @@ async def get_socio_economic(db: AsyncSession, district_id: int | None):
     rows = (await db.execute(text(f"""
         SELECT d.district_id, d.district_name,
                COUNT(cm.case_master_id) AS crime_count,
-               COALESCE(rs.risk_score, 0)::float
+               COALESCE(CAST(rs.risk_score AS DECIMAL(5,2)), 0) AS risk_score
         FROM districts d
         LEFT JOIN units u ON u.district_id = d.district_id
         LEFT JOIN case_masters cm ON cm.police_station_id = u.unit_id
-            AND cm.crime_registered_date >= CURRENT_DATE - INTERVAL '365 days'
+            AND cm.crime_registered_date >= CURRENT_DATE - INTERVAL 365 DAY
         LEFT JOIN risk_predictions rs ON d.district_id = rs.district_id
         {where_clause}
         GROUP BY d.district_id, d.district_name, rs.risk_score
@@ -129,7 +129,7 @@ async def get_socio_economic(db: AsyncSession, district_id: int | None):
             "district_id": r[0],
             "district_name": r[1],
             "crime_count": r[2],
-            "risk_score": r[3],
+            "risk_score": float(r[3]),
         })
 
     return {"data": data}

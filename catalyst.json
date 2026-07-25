@@ -1,0 +1,22 @@
+{
+    "client": {
+        "name": "crime-intelligence-ui",
+        "source": "frontend/dist"
+    },
+    "appsail": [
+        {
+            "name": "crime-intelligence-backend",
+            "source": "backend",
+            "build": "pip install -r requirements.txt",
+            "command": "uvicorn app.main:app --host 0.0.0.0 --port 8000",
+            "port": 8000,
+            "health_check": {
+                "path": "/health",
+                "interval": 30,
+                "timeout": 3,
+                "healthy_threshold": 2,
+                "unhealthy_threshold": 3
+            }
+        }
+    ]
+}

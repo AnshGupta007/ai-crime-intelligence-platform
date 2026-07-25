@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Date, DateTime, DECIMAL, Boolean, ForeignKey, Text, text
-from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 
 from app.database import Base
 
@@ -56,7 +55,7 @@ class MOPattern(Base):
     pattern_id = Column(Integer, primary_key=True, autoincrement=True)
     accused_master_id = Column(Integer, ForeignKey("accused.accused_master_id"))
     pattern_signature = Column(Text)
-    associated_cases = Column(ARRAY(Integer))
+    associated_cases = Column(Text)
     first_seen = Column(Date)
     last_seen = Column(Date)
     evolution_score = Column(DECIMAL(5, 2))
@@ -72,6 +71,6 @@ class Alert(Base):
     police_station_id = Column(Integer, ForeignKey("units.unit_id"))
     title = Column(String(255))
     description = Column(Text)
-    data = Column(JSONB)
+    data = Column(Text)
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=text("NOW()"))

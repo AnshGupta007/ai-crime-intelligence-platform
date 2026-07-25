@@ -6,21 +6,23 @@ async def get_summary_kpis(db: AsyncSession, district_id: int | None = None):
     params = {}
     join_clause = ""
     where_clause = ""
+    district_filter = ""
     if district_id:
         join_clause = "JOIN units u ON cm.police_station_id = u.unit_id"
         where_clause = "WHERE u.district_id = :district_id"
+        district_filter = "AND u.district_id = :district_id"
         params["district_id"] = district_id
 
     row = (await db.execute(text(f"""
         SELECT
             (SELECT COUNT(*) FROM case_masters cm {join_clause} {where_clause}) AS total_firs,
-            (SELECT COUNT(*) FROM case_masters cm {join_clause} WHERE cm.crime_registered_date = CURRENT_DATE {"AND u.district_id = :district_id" if district_id else ""}) AS today_firs,
-            (SELECT COUNT(*) FROM crime_hotspots {"WHERE district_id = :district_id" if district_id else ""}) AS active_hotspots,
-            (SELECT COUNT(*) FROM alerts WHERE is_read = FALSE AND severity = 'CRITICAL' {"AND district_id = :district_id" if district_id else ""}) AS critical_alerts,
+            (SELECT COUNT(*) FROM case_masters cm {join_clause} WHERE cm.crime_registered_date = CURRENT_DATE {district_filter}) AS today_firs,
+            (SELECT COUNT(*) FROM crime_hotspots {("WHERE district_id = :district_id" if district_id else "")}) AS active_hotspots,
+            (SELECT COUNT(*) FROM alerts WHERE is_read = FALSE AND severity = 'CRITICAL' {("AND district_id = :district_id" if district_id else "")}) AS critical_alerts,
             (SELECT ROUND(
-                (SELECT COUNT(*)::numeric FROM case_masters cm {join_clause} WHERE cm.crime_registered_date >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month') AND cm.crime_registered_date < date_trunc('month', CURRENT_DATE) {"AND u.district_id = :district_id" if district_id else ""})
+                (SELECT COUNT(*) FROM case_masters cm {join_clause} WHERE cm.crime_registered_date >= DATE_FORMAT(CURRENT_DATE - INTERVAL 1 MONTH, '%Y-%m-01') AND cm.crime_registered_date < DATE_FORMAT(CURRENT_DATE, '%Y-%m-01') {district_filter})
                 /
-                NULLIF((SELECT COUNT(*)::numeric FROM case_masters cm {join_clause} WHERE cm.crime_registered_date >= date_trunc('month', CURRENT_DATE - INTERVAL '2 months') AND cm.crime_registered_date < date_trunc('month', CURRENT_DATE - INTERVAL '1 month') {"AND u.district_id = :district_id" if district_id else ""}), 0)
+                NULLIF((SELECT COUNT(*) FROM case_masters cm {join_clause} WHERE cm.crime_registered_date >= DATE_FORMAT(CURRENT_DATE - INTERVAL 2 MONTH, '%Y-%m-01') AND cm.crime_registered_date < DATE_FORMAT(CURRENT_DATE - INTERVAL 1 MONTH, '%Y-%m-01') {district_filter}), 0)
                 * 100 - 100, 1)
             ) AS mom_change
     """), params)).fetchone()
@@ -37,14 +39,14 @@ async def get_summary_kpis(db: AsyncSession, district_id: int | None = None):
 async def get_trends(db: AsyncSession, months: int):
     rows = (await db.execute(text("""
         SELECT
-            date_trunc('day', crime_registered_date)::text AS date,
+            DATE(crime_registered_date) AS date,
             COUNT(*) AS count
         FROM case_masters
-        WHERE crime_registered_date >= CURRENT_DATE - make_interval(months => :months)
-        GROUP BY date_trunc('day', crime_registered_date)
+        WHERE crime_registered_date >= CURRENT_DATE - INTERVAL :months MONTH
+        GROUP BY DATE(crime_registered_date)
         ORDER BY date
     """), {"months": months})).fetchall()
-    return {"points": [{"date": r[0], "count": r[1]} for r in rows]}
+    return {"points": [{"date": str(r[0]), "count": r[1]} for r in rows]}
 
 
 async def get_crime_categories(db: AsyncSession):
@@ -62,7 +64,7 @@ async def get_crime_categories(db: AsyncSession):
 
 async def get_recent_alerts(db: AsyncSession, limit: int):
     rows = (await db.execute(text("""
-        SELECT alert_id, title, severity, description, created_at::text
+        SELECT alert_id, title, severity, description, CAST(created_at AS CHAR) AS created_at
         FROM alerts
         ORDER BY created_at DESC
         LIMIT :limit
@@ -72,7 +74,7 @@ async def get_recent_alerts(db: AsyncSession, limit: int):
 
 async def get_recent_cases(db: AsyncSession, limit: int):
     rows = (await db.execute(text("""
-        SELECT cm.case_master_id, cm.crime_no, cm.crime_registered_date::text,
+        SELECT cm.case_master_id, cm.crime_no, CAST(cm.crime_registered_date AS CHAR) AS crime_registered_date,
                ch.crime_group_name, d.district_name, csm.case_status_name
         FROM case_masters cm
         JOIN crime_heads ch ON cm.crime_major_head_id = ch.crime_head_id

@@ -74,7 +74,7 @@ async def search_accused(db: AsyncSession, q: str):
     rows = (await db.execute(text("""
         SELECT accused_master_id, accused_name, COUNT(DISTINCT case_master_id) AS case_count
         FROM accused
-        WHERE accused_name ILIKE :q
+        WHERE accused_name LIKE :q
         GROUP BY accused_master_id, accused_name
         ORDER BY case_count DESC
         LIMIT 20

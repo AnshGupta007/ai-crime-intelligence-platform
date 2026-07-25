@@ -13,7 +13,7 @@ async def generate_report(db: AsyncSession, data: dict):
     report_id = f"rep-{int(datetime.now(timezone.utc).timestamp())}"
 
     base_query = """
-        SELECT cm.crime_no, cm.crime_registered_date::text,
+        SELECT cm.crime_no, CAST(cm.crime_registered_date AS CHAR) AS crime_registered_date,
                ch.crime_group_name, d.district_name,
                csm.case_status_name
         FROM case_masters cm
@@ -30,12 +30,12 @@ async def generate_report(db: AsyncSession, data: dict):
         params["district_id"] = district_id
 
     if report_type == "monthly_crime_statistics":
-        conditions.append("cm.crime_registered_date >= date_trunc('month', CURRENT_DATE)")
+        conditions.append("cm.crime_registered_date >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')")
     elif report_type == "repeat_offender_intelligence":
         base_query = """
             SELECT a.accused_name, COUNT(DISTINCT a.case_master_id) AS case_count,
-                   string_agg(DISTINCT cm.crime_no, ', ') AS crime_nos,
-                   string_agg(DISTINCT d.district_name, ', ') AS districts
+                   GROUP_CONCAT(DISTINCT cm.crime_no SEPARATOR ', ') AS crime_nos,
+                   GROUP_CONCAT(DISTINCT d.district_name SEPARATOR ', ') AS districts
             FROM accused a
             JOIN case_masters cm ON a.case_master_id = cm.case_master_id
             JOIN units u ON cm.police_station_id = u.unit_id
