@@ -1,0 +1,893 @@
+{
+    "tables": [
+        {
+            "table_name": "States",
+            "description": "Master table storing Indian States",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "StateCode",
+                    "type": "varchar",
+                    "max_length": 10,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "StateName",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": false
+                },
+                {
+                    "name": "IsActive",
+                    "type": "boolean",
+                    "default_value": true
+                }
+            ]
+        },
+        {
+            "table_name": "Districts",
+            "description": "Master table storing Districts",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "DistrictCode",
+                    "type": "varchar",
+                    "max_length": 10,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "DistrictName",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": false
+                },
+                {
+                    "name": "StateID",
+                    "type": "foreign_key",
+                    "ref_table": "States",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "Latitude",
+                    "type": "double",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Longitude",
+                    "type": "double",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Population",
+                    "type": "int",
+                    "is_nullable": true
+                }
+            ]
+        },
+        {
+            "table_name": "UnitTypes",
+            "description": "Police Unit / Station Types (Station, Outpost, Circle Office, HQ)",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "TypeCode",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "TypeName",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": false
+                }
+            ]
+        },
+        {
+            "table_name": "Units",
+            "description": "Police Stations and Administrative Units",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "UnitCode",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "UnitName",
+                    "type": "varchar",
+                    "max_length": 150,
+                    "is_nullable": false
+                },
+                {
+                    "name": "UnitTypeID",
+                    "type": "foreign_key",
+                    "ref_table": "UnitTypes",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DistrictID",
+                    "type": "foreign_key",
+                    "ref_table": "Districts",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "Latitude",
+                    "type": "double",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Longitude",
+                    "type": "double",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Address",
+                    "type": "text",
+                    "is_nullable": true
+                },
+                {
+                    "name": "ContactNumber",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": true
+                }
+            ]
+        },
+        {
+            "table_name": "Ranks",
+            "description": "Police Rank Hierarchy",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "RankCode",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "RankName",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": false
+                },
+                {
+                    "name": "RankOrder",
+                    "type": "int",
+                    "is_nullable": false
+                }
+            ]
+        },
+        {
+            "table_name": "Designations",
+            "description": "Official Designations Linked to Ranks",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "DesignationCode",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "DesignationName",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": false
+                },
+                {
+                    "name": "RankID",
+                    "type": "foreign_key",
+                    "ref_table": "Ranks",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                }
+            ]
+        },
+        {
+            "table_name": "Employees",
+            "description": "Police Personnel and Officers",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "EmployeeCode",
+                    "type": "varchar",
+                    "max_length": 30,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "EmployeeName",
+                    "type": "varchar",
+                    "max_length": 150,
+                    "is_nullable": false
+                },
+                {
+                    "name": "RankID",
+                    "type": "foreign_key",
+                    "ref_table": "Ranks",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DesignationID",
+                    "type": "foreign_key",
+                    "ref_table": "Designations",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "UnitID",
+                    "type": "foreign_key",
+                    "ref_table": "Units",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DistrictID",
+                    "type": "foreign_key",
+                    "ref_table": "Districts",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "ContactNumber",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": true
+                },
+                {
+                    "name": "Email",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": true
+                }
+            ]
+        },
+        {
+            "table_name": "CaseMaster",
+            "description": "Central FIR Case Entity",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CrimeNo",
+                    "type": "varchar",
+                    "max_length": 25,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "CaseNo",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": false
+                },
+                {
+                    "name": "CrimeRegisteredDate",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "IncidentFromDate",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "IncidentToDate",
+                    "type": "datetime",
+                    "is_nullable": true
+                },
+                {
+                    "name": "InfoReceivedPSDate",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DistrictID",
+                    "type": "foreign_key",
+                    "ref_table": "Districts",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "UnitID",
+                    "type": "foreign_key",
+                    "ref_table": "Units",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "EmployeeID",
+                    "type": "foreign_key",
+                    "ref_table": "Employees",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CaseCategoryID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseCategories",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "GravityOffenceID",
+                    "type": "foreign_key",
+                    "ref_table": "GravityOffences",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CrimeHeadID",
+                    "type": "foreign_key",
+                    "ref_table": "CrimeHeads",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CrimeSubHeadID",
+                    "type": "foreign_key",
+                    "ref_table": "CrimeSubHeads",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CaseStatusID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseStatusMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CourtID",
+                    "type": "foreign_key",
+                    "ref_table": "Courts",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Latitude",
+                    "type": "double",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Longitude",
+                    "type": "double",
+                    "is_nullable": true
+                },
+                {
+                    "name": "PlaceOfOccurrence",
+                    "type": "text",
+                    "is_nullable": false
+                },
+                {
+                    "name": "BriefFacts",
+                    "type": "text",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedBy",
+                    "type": "bigint",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedTime",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "ModifiedBy",
+                    "type": "bigint",
+                    "is_nullable": true
+                },
+                {
+                    "name": "ModifiedTime",
+                    "type": "datetime",
+                    "is_nullable": true
+                },
+                {
+                    "name": "DeletedFlag",
+                    "type": "boolean",
+                    "default_value": false
+                },
+                {
+                    "name": "DeletedTime",
+                    "type": "datetime",
+                    "is_nullable": true
+                },
+                {
+                    "name": "DeletedBy",
+                    "type": "bigint",
+                    "is_nullable": true
+                }
+            ]
+        },
+        {
+            "table_name": "Victim",
+            "description": "Case Victims",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CaseID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseMaster",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "VictimName",
+                    "type": "varchar",
+                    "max_length": 150,
+                    "is_nullable": false
+                },
+                {
+                    "name": "Age",
+                    "type": "int",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Gender",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": false
+                },
+                {
+                    "name": "ReligionID",
+                    "type": "foreign_key",
+                    "ref_table": "ReligionMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "CasteID",
+                    "type": "foreign_key",
+                    "ref_table": "CasteMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "OccupationID",
+                    "type": "foreign_key",
+                    "ref_table": "OccupationMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "InjuryType",
+                    "type": "varchar",
+                    "max_length": 50,
+                    "is_nullable": true
+                },
+                {
+                    "name": "IsDeceased",
+                    "type": "boolean",
+                    "default_value": false
+                },
+                {
+                    "name": "Address",
+                    "type": "text",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Phone",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": true
+                },
+                {
+                    "name": "CreatedBy",
+                    "type": "bigint",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedTime",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DeletedFlag",
+                    "type": "boolean",
+                    "default_value": false
+                }
+            ]
+        },
+        {
+            "table_name": "Accused",
+            "description": "Case Accused / Suspects",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CaseID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseMaster",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "AccusedName",
+                    "type": "varchar",
+                    "max_length": 150,
+                    "is_nullable": false
+                },
+                {
+                    "name": "AliasName",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": true
+                },
+                {
+                    "name": "Age",
+                    "type": "int",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Gender",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": false
+                },
+                {
+                    "name": "ReligionID",
+                    "type": "foreign_key",
+                    "ref_table": "ReligionMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "CasteID",
+                    "type": "foreign_key",
+                    "ref_table": "CasteMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "OccupationID",
+                    "type": "foreign_key",
+                    "ref_table": "OccupationMasters",
+                    "ref_column": "ROWID",
+                    "is_nullable": true
+                },
+                {
+                    "name": "AccusedStatus",
+                    "type": "varchar",
+                    "max_length": 50,
+                    "is_nullable": false
+                },
+                {
+                    "name": "IsHabitualOffender",
+                    "type": "boolean",
+                    "default_value": false
+                },
+                {
+                    "name": "Address",
+                    "type": "text",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Phone",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": true
+                },
+                {
+                    "name": "CreatedBy",
+                    "type": "bigint",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedTime",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DeletedFlag",
+                    "type": "boolean",
+                    "default_value": false
+                }
+            ]
+        },
+        {
+            "table_name": "ComplainantDetails",
+            "description": "Complaint Filer Information",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CaseID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseMaster",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "ComplainantName",
+                    "type": "varchar",
+                    "max_length": 150,
+                    "is_nullable": false
+                },
+                {
+                    "name": "FatherHusbandName",
+                    "type": "varchar",
+                    "max_length": 150,
+                    "is_nullable": true
+                },
+                {
+                    "name": "Age",
+                    "type": "int",
+                    "is_nullable": true
+                },
+                {
+                    "name": "Gender",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": false
+                },
+                {
+                    "name": "RelationWithVictim",
+                    "type": "varchar",
+                    "max_length": 100,
+                    "is_nullable": true
+                },
+                {
+                    "name": "Address",
+                    "type": "text",
+                    "is_nullable": false
+                },
+                {
+                    "name": "Phone",
+                    "type": "varchar",
+                    "max_length": 20,
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedBy",
+                    "type": "bigint",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedTime",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DeletedFlag",
+                    "type": "boolean",
+                    "default_value": false
+                }
+            ]
+        },
+        {
+            "table_name": "ActSectionAssociation",
+            "description": "Acts & Sections Applied to Case",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CaseID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseMaster",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "ActID",
+                    "type": "foreign_key",
+                    "ref_table": "Acts",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "SectionID",
+                    "type": "foreign_key",
+                    "ref_table": "Sections",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                }
+            ]
+        },
+        {
+            "table_name": "ArrestSurrender",
+            "description": "Arrest and Surrender Records",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CaseID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseMaster",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "AccusedID",
+                    "type": "foreign_key",
+                    "ref_table": "Accused",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DateOfArrest",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "ArrestType",
+                    "type": "varchar",
+                    "max_length": 50,
+                    "is_nullable": false
+                },
+                {
+                    "name": "ArrestingOfficerID",
+                    "type": "foreign_key",
+                    "ref_table": "Employees",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "PlaceOfArrest",
+                    "type": "varchar",
+                    "max_length": 255,
+                    "is_nullable": true
+                },
+                {
+                    "name": "BailStatus",
+                    "type": "varchar",
+                    "max_length": 50,
+                    "default_value": "No Bail"
+                },
+                {
+                    "name": "CreatedBy",
+                    "type": "bigint",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedTime",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DeletedFlag",
+                    "type": "boolean",
+                    "default_value": false
+                }
+            ]
+        },
+        {
+            "table_name": "ChargesheetDetails",
+            "description": "Chargesheet Records",
+            "columns": [
+                {
+                    "name": "ROWID",
+                    "type": "bigint",
+                    "is_primary": true,
+                    "auto_increment": true
+                },
+                {
+                    "name": "CaseID",
+                    "type": "foreign_key",
+                    "ref_table": "CaseMaster",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "ChargesheetNo",
+                    "type": "varchar",
+                    "max_length": 50,
+                    "is_unique": true,
+                    "is_nullable": false
+                },
+                {
+                    "name": "ChargesheetDate",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "InvestigatingOfficerID",
+                    "type": "foreign_key",
+                    "ref_table": "Employees",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CourtID",
+                    "type": "foreign_key",
+                    "ref_table": "Courts",
+                    "ref_column": "ROWID",
+                    "is_nullable": false
+                },
+                {
+                    "name": "Remarks",
+                    "type": "text",
+                    "is_nullable": true
+                },
+                {
+                    "name": "CreatedBy",
+                    "type": "bigint",
+                    "is_nullable": false
+                },
+                {
+                    "name": "CreatedTime",
+                    "type": "datetime",
+                    "is_nullable": false
+                },
+                {
+                    "name": "DeletedFlag",
+                    "type": "boolean",
+                    "default_value": false
+                }
+            ]
+        }
+    ]
+}
