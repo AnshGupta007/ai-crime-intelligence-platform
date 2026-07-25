@@ -1,0 +1,14 @@
+﻿
+[31m[1m[31m├ù[39m[31m[22m [1mError[22m: [39m[1m[31mIN[39m[22m is not a valid input for the global "--dc" option.
+
+The valid inputs are: 
+[1m* us[22m
+[1m* eu[22m
+[1m* in[22m
+[1m* au[22m
+[1m* ca[22m
+[1m* sa[22m
+[1m* jp[22m
+[1m* uae[22m
+
+[1m[34mREF: [39m[4mhttps://www.zoho.com/catalyst/help/cli-options.html#DC[24m[22m
