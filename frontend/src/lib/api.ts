@@ -1,4 +1,6 @@
-export const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+const isLocal = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+export const BASE_URL = import.meta.env.VITE_API_URL || (isLocal ? "http://localhost:8000/api/v1" : "/api/v1");
 
 export class ApiError extends Error {
   status: number;
@@ -20,7 +22,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (res.status === 401) {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    window.location.href = "#/login";
     throw new ApiError("Unauthorized", 401);
   }
 
@@ -36,8 +38,8 @@ const api = {
   get: <T>(path: string, params?: Record<string, unknown>) => {
     const validParams = params
       ? Object.entries(params).filter(
-          ([_, v]) => v !== undefined && v !== null && v !== "" && v !== "undefined" && v !== "null"
-        )
+        ([_, v]) => v !== undefined && v !== null && v !== "" && v !== "undefined" && v !== "null"
+      )
       : [];
     const qs = validParams.length > 0
       ? "?" + new URLSearchParams(validParams.map(([k, v]) => [k, String(v)])).toString()
