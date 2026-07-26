@@ -526,7 +526,7 @@ The platform implements an extended relational FIR schema mapped from the **Karn
 
 This project is released under the **MIT License**.
 
-Designed and built for the **Datathon Hackathon** in collaboration with technical frameworks inspired by the **Karnataka State Police (KSP) Strategic Intelligence Mandate**.
+Designed and built for the **Datathon Hackathon 2026** in collaboration with technical frameworks inspired by the **Karnataka State Police (KSP) Strategic Intelligence Mandate**.
 
 ---
 
