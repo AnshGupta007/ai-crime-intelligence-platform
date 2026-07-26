@@ -73,6 +73,7 @@ app.include_router(reports.router, prefix=API_PREFIX)
 app.include_router(alerts.router, prefix=API_PREFIX)
 
 
+@app.get("/")
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "Crime Intelligence Platform Backend"}

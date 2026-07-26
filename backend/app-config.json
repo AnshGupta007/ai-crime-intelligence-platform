@@ -1,7 +1,6 @@
 {
     "name": "crime-intelligence-backend",
     "stack": "python_3_11",
-    "build_path": "./",
     "buildPath": "./",
     "build": [
         "pip install -r requirements.txt"
