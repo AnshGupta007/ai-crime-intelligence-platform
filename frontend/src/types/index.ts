@@ -84,6 +84,11 @@ export interface NetworkNode {
   label: string;
   node_type: string;
   weight: number;
+  name?: string;
+  type?: string;
+  group?: number;
+  case_count?: number;
+  district?: string;
 }
 
 export interface NetworkEdge {
@@ -91,17 +96,32 @@ export interface NetworkEdge {
   target: string;
   relation: string;
   weight: number;
+  label?: string;
 }
 
 export interface NetworkGraph {
   nodes: NetworkNode[];
   edges: NetworkEdge[];
+  metrics?: {
+    total_nodes: number;
+    total_edges: number;
+    density: number;
+    avg_degree: number;
+    clustering_coefficient: number;
+  };
 }
 
 export interface RepeatOffender {
-  accused_master_id: number;
-  accused_name: string;
+  id?: number;
+  accused_master_id?: number;
+  name?: string;
+  accused_name?: string;
   case_count: number;
+  crime_types?: string[];
+  districts?: string[];
+  last_crime_date?: string;
+  risk_score?: number;
+  district?: string;
 }
 
 export interface RiskScore {
@@ -109,38 +129,61 @@ export interface RiskScore {
   district_name: string;
   risk_score: number;
   risk_level: string;
+  crime_rate_per_100k?: number;
+  predicted_trend?: string;
+  primary_factors?: string[];
 }
 
 export interface ForecastPoint {
   date: string;
   predicted: number;
+  predicted_count?: number;
   lower_bound: number | null;
   upper_bound: number | null;
+  confidence?: number;
 }
 
 export interface Community {
-  id: number;
+  id?: number;
+  community_id?: number;
+  name?: string;
   size: number;
   members: string[];
+  primary_districts?: string[];
+  threat_level?: string;
 }
 
 export interface CommunityResponse {
   communities: Community[];
-  total_nodes: number;
-  total_edges: number;
+  communities_count?: number;
+  modularity_score?: number;
+  total_nodes?: number;
+  total_edges?: number;
 }
 
 export interface SearchResult {
   accused_master_id: number;
   accused_name: string;
   case_count: number;
+  id?: number;
+  name?: string;
+  district?: string;
 }
 
 export interface Anomaly {
   anomaly_id: number;
   anomaly_type: string;
+  category_name?: string;
+  station_name?: string;
+  district_name?: string;
+  actual_count?: number;
+  expected_count?: number;
+  deviation_factor?: number;
+  z_score?: number;
   anomaly_score: number;
   description: string;
+  reasoning?: string;
+  severity?: string;
   detected_at: string;
   reviewed: boolean;
 }
@@ -153,13 +196,17 @@ export interface ForecastResponse {
 
 export interface SocioEconomicPoint {
   district_id: number;
-  district_name: string;
+  district: string;
+  district_name?: string;
   crime_count: number;
-  risk_score: number;
+  crime_rate?: number;
+  risk_score?: number;
   population?: number;
   literacy_rate?: number;
   urbanization_pct?: number;
+  urbanization_rate?: number;
   unemployment_pct?: number;
+  unemployment_rate?: number;
 }
 
 export interface SocioEconomicResponse {
@@ -167,9 +214,14 @@ export interface SocioEconomicResponse {
 }
 
 export interface SocioEconomicInsights {
-  literacy_crime_correlation: number;
-  urbanization_crime_correlation: number;
-  unemployment_crime_correlation: number;
-  insights: string[];
+  literacy_crime_correlation?: number;
+  urbanization_crime_correlation?: number;
+  unemployment_crime_correlation?: number;
+  correlations?: {
+    literacy_vs_crime: number;
+    unemployment_vs_crime: number;
+    urbanization_vs_crime: number;
+  };
+  insights?: string[];
+  key_findings?: string[];
 }
-

@@ -10,8 +10,10 @@ interface NetworkMetricsProps {
 export default function NetworkMetrics({ nodeCount, edgeCount, communities }: NetworkMetricsProps) {
   const avgDegree = nodeCount > 0 ? (edgeCount / nodeCount).toFixed(1) : "0";
   const communityCount = communities?.communities?.length || 0;
-  const clusterCoef = communities && communities.total_nodes > 1
-    ? (2 * communities.total_edges / Math.max(1, communities.total_nodes * (communities.total_nodes - 1))).toFixed(3)
+  const totalNodes = communities?.total_nodes || nodeCount || 1;
+  const totalEdges = communities?.total_edges || edgeCount || 0;
+  const clusterCoef = totalNodes > 1
+    ? (2 * totalEdges / Math.max(1, totalNodes * (totalNodes - 1))).toFixed(3)
     : "0";
 
   const cards = [

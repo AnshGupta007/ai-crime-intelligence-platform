@@ -73,22 +73,26 @@ export default function Network() {
               />
               {searchResults.length > 0 && searchQuery && (
                 <div className="absolute top-full left-0 right-0 z-10 mt-1 rounded-xl border bg-white shadow-lg max-h-60 overflow-y-auto">
-                  {searchResults.map((r) => (
-                    <button
-                      key={r.accused_master_id}
-                      onClick={() => handleSelectAccused(r.accused_master_id, r.accused_name)}
-                      className="flex w-full items-center justify-between px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-medium">{r.accused_name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">{r.case_count} cases</Badge>
-                        <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                      </div>
-                    </button>
-                  ))}
+                  {searchResults.map((r, idx) => {
+                    const accId = r.accused_master_id || r.id || (idx + 100);
+                    const accName = r.accused_name || r.name || "Unknown Accused";
+                    return (
+                      <button
+                        key={accId}
+                        onClick={() => handleSelectAccused(accId, accName)}
+                        className="flex w-full items-center justify-between px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="font-medium">{accName}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="secondary">{r.case_count} cases</Badge>
+                          <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
               {searchLoading && (
@@ -156,7 +160,7 @@ export default function Network() {
               ?.filter((e) => e.source === selectedNode?.id || e.target === selectedNode?.id)
               ?.map((e) => ({
                 caseNo: e.source.startsWith("case-") ? e.source : e.target,
-                relation: e.relation,
+                relation: e.relation || e.label || "CONNECTED",
               })) || []}
             onClose={() => setSelectedNode(null)}
           />
@@ -170,16 +174,20 @@ export default function Network() {
               {repeatOffenders.length === 0 ? (
                 <p className="text-xs text-muted-foreground py-4 text-center">No repeat offenders found</p>
               ) : (
-                repeatOffenders.slice(0, 10).map((offender) => (
-                  <button
-                    key={offender.accused_master_id}
-                    onClick={() => handleSelectAccused(offender.accused_master_id, offender.accused_name)}
-                    className="flex w-full items-center justify-between rounded-lg border px-3 py-2 text-xs transition-colors hover:bg-slate-50"
-                  >
-                    <span className="font-medium truncate">{offender.accused_name}</span>
-                    <Badge variant="secondary">{offender.case_count}</Badge>
-                  </button>
-                ))
+                repeatOffenders.slice(0, 10).map((offender, idx) => {
+                  const offId = offender.accused_master_id || offender.id || (idx + 100);
+                  const offName = offender.accused_name || offender.name || "Unknown Offender";
+                  return (
+                    <button
+                      key={offId}
+                      onClick={() => handleSelectAccused(offId, offName)}
+                      className="flex w-full items-center justify-between rounded-lg border px-3 py-2 text-xs transition-colors hover:bg-slate-50"
+                    >
+                      <span className="font-medium truncate">{offName}</span>
+                      <Badge variant="secondary">{offender.case_count}</Badge>
+                    </button>
+                  );
+                })
               )}
               {repeatOffenders.length > 0 && (
                 <button

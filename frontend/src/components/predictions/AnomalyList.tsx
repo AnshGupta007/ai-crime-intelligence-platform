@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { AlertTriangle, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import type { Anomaly } from "@/types";
 
 interface AnomalyListProps {
   data: Anomaly[];
   loading?: boolean;
-  onReview: (id: number) => Promise<boolean>;
+  onReview: (id: number) => Promise<any> | void;
 }
 
 const SEVERITY_STYLES: Record<string, string> = {

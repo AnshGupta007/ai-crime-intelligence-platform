@@ -32,10 +32,24 @@ export default function NetworkGraphWrapper({ data, highlightIds, selectedId, on
     );
   }
 
+  const nodes = data.nodes.map(n => ({
+    id: n.id,
+    label: n.label || n.name || n.id,
+    node_type: n.node_type || n.type || "ACCUSED",
+    weight: n.weight || 1
+  }));
+
+  const links = data.edges.map(e => ({
+    source: e.source,
+    target: e.target,
+    relation: e.relation || e.label || "CONNECTED",
+    weight: e.weight || 1
+  }));
+
   return (
     <ForceGraph
-      nodes={data.nodes}
-      links={data.edges.map((e) => ({ source: e.source, target: e.target, relation: e.relation, weight: e.weight }))}
+      nodes={nodes}
+      links={links}
       highlightIds={highlightIds}
       onNodeClick={onNodeClick}
       selectedId={selectedId}
