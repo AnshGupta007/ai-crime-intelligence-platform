@@ -1,6 +1,6 @@
 {
     "name": "crime-intelligence-backend",
-    "stack": "python3.10",
+    "stack": "python3.11",
     "build_path": "./",
     "buildPath": "./",
     "build": [
