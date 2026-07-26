@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -9,23 +10,35 @@ from app.database import engine, async_session_factory
 from app.models.base import Base
 from app.redis_client import close_redis
 
+logger = logging.getLogger("app.main")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
-    async with async_session_factory() as session:
-        result = await session.execute(text("SELECT COUNT(*) FROM case_masters"))
-        count = result.scalar()
-        if count == 0:
-            from app.seeders.data_seeder import DataSeeder
-            seeder = DataSeeder(session)
-            await seeder.seed_all()
+        async with async_session_factory() as session:
+            result = await session.execute(text("SELECT COUNT(*) FROM case_masters"))
+            count = result.scalar()
+            if count == 0:
+                from app.seeders.data_seeder import DataSeeder
+                seeder = DataSeeder(session)
+                await seeder.seed_all()
+    except Exception as e:
+        logger.warning(f"Database initialization failed: {e}. Running in degraded/mock mode.")
 
     yield
-    await close_redis()
-    await engine.dispose()
+
+    try:
+        await close_redis()
+    except Exception:
+        pass
+    try:
+        await engine.dispose()
+    except Exception:
+        pass
 
 
 app = FastAPI(
