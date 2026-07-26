@@ -3,7 +3,7 @@
     "stack": "python_3_11",
     "buildPath": "./",
     "build": [
-        "pip install -r requirements.txt"
+        "python3 -m pip install -r requirements.txt -t ."
     ],
     "command": "python3 run.py"
 }
