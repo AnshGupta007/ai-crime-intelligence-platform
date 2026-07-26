@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import api from "@/lib/api";
-import type { ForecastPoint, ForecastResponse, RiskScore, SocioEconomicPoint, SocioEconomicResponse, Anomaly } from "@/types";
+import type { ForecastPoint, ForecastResponse, RiskScore, SocioEconomicPoint, SocioEconomicResponse, SocioEconomicInsights, Anomaly } from "@/types";
 
 export function usePredictions() {
   const [forecast, setForecast] = useState<ForecastPoint[]>([]);
@@ -8,6 +8,7 @@ export function usePredictions() {
   const [riskScores, setRiskScores] = useState<RiskScore[]>([]);
   const [riskLoading, setRiskLoading] = useState(false);
   const [socioEconomic, setSocioEconomic] = useState<SocioEconomicPoint[]>([]);
+  const [socioInsights, setSocioInsights] = useState<SocioEconomicInsights | null>(null);
   const [socioLoading, setSocioLoading] = useState(false);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [anomaliesLoading, setAnomaliesLoading] = useState(false);
@@ -37,8 +38,12 @@ export function usePredictions() {
     setSocioLoading(true);
     try {
       const params = districtId ? { district_id: districtId } : undefined;
-      const data = await api.get<SocioEconomicResponse>("/predictions/socio-economic", params);
+      const [data, insights] = await Promise.all([
+        api.get<SocioEconomicResponse>("/predictions/socio-economic", params),
+        api.get<SocioEconomicInsights>("/predictions/socio-insights").catch(() => null),
+      ]);
       setSocioEconomic(data.data);
+      if (insights) setSocioInsights(insights);
     } catch { /* ignore */ }
     setSocioLoading(false);
   }, []);
@@ -76,7 +81,7 @@ export function usePredictions() {
   return {
     forecast, forecastLoading,
     riskScores, riskLoading,
-    socioEconomic, socioLoading,
+    socioEconomic, socioInsights, socioLoading,
     anomalies, anomaliesLoading,
     fetchForecast, fetchRiskScores,
     fetchSocioEconomic, fetchAnomalies,

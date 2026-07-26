@@ -234,6 +234,7 @@ class DataSeeder:
 
     async def seed_all(self):
         await self.seed_reference_tables()
+        await self.seed_socio_economic_data()
         await self.seed_cases(7000)
         await self.seed_persons()
         await self.seed_arrests()
@@ -241,6 +242,59 @@ class DataSeeder:
         await self.seed_analytics_tables()
         await self._seed_intentional_patterns()
         await self.seed_users()
+
+    async def seed_socio_economic_data(self):
+        """Karnataka district socio-economic indicators (2011 Census + govt data)."""
+        await self.db.execute(text("DELETE FROM socio_economic_data"))
+        await self.db.commit()
+        data = [
+            ("Bengaluru Urban", 9621000, 88.5, 91.2, 3.8, 28),
+            ("Bengaluru Rural", 990000, 78.1, 29.4, 4.2, 10),
+            ("Mysuru", 3001000, 74.2, 41.5, 5.1, 18),
+            ("Belagavi", 4779000, 73.5, 25.3, 6.2, 24),
+            ("Dharwad", 1847000, 80.3, 56.8, 5.5, 12),
+            ("Dakshina Kannada", 2089000, 88.6, 47.3, 4.0, 14),
+            ("Kalaburagi", 2566000, 65.7, 21.2, 7.8, 16),
+            ("Ballari", 2453000, 67.4, 30.5, 6.9, 14),
+            ("Tumakuru", 2678000, 75.1, 22.8, 5.3, 15),
+            ("Shivamogga", 1753000, 80.4, 33.6, 4.8, 12),
+            ("Raichur", 1925000, 60.1, 18.9, 8.5, 11),
+            ("Kodagu", 554000, 82.6, 14.2, 2.9, 6),
+            ("Udupi", 1177000, 86.2, 42.9, 3.5, 8),
+            ("Hassan", 1776000, 76.1, 22.4, 4.9, 11),
+            ("Mandya", 1805000, 70.2, 17.3, 5.7, 10),
+            ("Chitradurga", 1659000, 73.8, 23.1, 5.9, 10),
+            ("Davangere", 1945000, 75.6, 28.5, 5.4, 11),
+            ("Bidar", 1703000, 72.3, 24.1, 6.8, 10),
+            ("Koppal", 1389000, 63.2, 16.8, 8.2, 8),
+            ("Uttara Kannada", 1437000, 84.1, 28.3, 4.1, 10),
+            ("Chamarajanagar", 1020000, 61.4, 12.7, 7.5, 7),
+            ("Ramanagara", 1082000, 69.5, 15.3, 6.1, 6),
+            ("Chikkaballapura", 1255000, 70.3, 18.6, 6.4, 7),
+            ("Kolar", 1537000, 74.3, 25.7, 5.8, 9),
+            ("Bagalkote", 1889000, 68.6, 22.5, 7.1, 10),
+            ("Gadag", 1064000, 72.1, 26.8, 6.3, 7),
+            ("Haveri", 1597000, 74.8, 19.2, 5.6, 9),
+            ("Yadgir", 1174000, 56.8, 14.5, 9.2, 6),
+            ("Vijayapura", 2178000, 67.2, 20.1, 7.3, 13),
+            ("Chikkmagaluru", 1138000, 79.2, 24.8, 4.5, 8),
+            ("Vijayanagara", 1350000, 66.1, 19.3, 6.7, 7),
+        ]
+        insert_stmt = text("""
+            INSERT INTO socio_economic_data
+                (district_id, population, literacy_rate, urbanization_pct, unemployment_pct, police_station_count)
+            VALUES (
+                (SELECT district_id FROM districts WHERE district_name = :name LIMIT 1),
+                :pop, :lit, :urban, :unemp, :stations
+            )
+        """)
+        for row in data:
+            await self.db.execute(insert_stmt, {
+                "name": row[0], "pop": row[1], "lit": row[2],
+                "urban": row[3], "unemp": row[4], "stations": row[5]
+            })
+        await self.db.commit()
+
 
     async def _insert(self, table: str, data: list[dict]):
         if not data:

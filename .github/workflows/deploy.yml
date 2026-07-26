@@ -1,0 +1,43 @@
+name: Deploy to Zoho Catalyst
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy to Zoho Catalyst
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies & Build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Install Zoho Catalyst CLI
+        run: npm install -g zcatalyst-cli
+
+      - name: Deploy Client and AppSail to Zoho Catalyst
+        env:
+          CATALYST_TOKEN: ${{ secrets.CATALYST_TOKEN }}
+        run: |
+          if [ -n "$CATALYST_TOKEN" ]; then
+            catalyst deploy --token "$CATALYST_TOKEN"
+          else
+            echo "ERROR: CATALYST_TOKEN secret is missing in GitHub repository settings."
+            echo "To fix: Go to GitHub Repo -> Settings -> Secrets and variables -> Actions -> New repository secret -> Name: CATALYST_TOKEN"
+            exit 1
+          fi

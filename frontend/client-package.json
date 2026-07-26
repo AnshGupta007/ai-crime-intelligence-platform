@@ -1,6 +1,5 @@
 {
     "name": "crime-intelligence-ui",
-    "client": "frontend",
-    "buildPath": "dist",
+    "version": "1.0.0",
     "homepage": "index.html"
 }

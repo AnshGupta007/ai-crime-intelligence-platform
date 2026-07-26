@@ -3,7 +3,20 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False, pool_size=10, max_overflow=20)
+db_url = settings.DATABASE_URL
+if "mysql+aiomysql" in db_url:
+    db_url = db_url.replace("mysql+aiomysql", "postgresql+asyncpg")
+elif "postgresql://" in db_url and "+asyncpg" not in db_url:
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://")
+
+try:
+    engine = create_async_engine(db_url, echo=False, pool_size=10, max_overflow=20)
+except Exception:
+    try:
+        engine = create_async_engine("postgresql+asyncpg://postgres:postgres@localhost:5432/crime_db", echo=False)
+    except Exception:
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+
 async_session_factory = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 

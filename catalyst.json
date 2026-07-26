@@ -6,7 +6,9 @@
     "appsail": [
         {
             "name": "crime-intelligence-backend",
-            "source": "backend"
+            "path": "backend",
+            "source": "backend",
+            "build_path": "backend"
         }
     ]
 }

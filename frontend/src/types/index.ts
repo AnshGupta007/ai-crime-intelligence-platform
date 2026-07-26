@@ -156,8 +156,20 @@ export interface SocioEconomicPoint {
   district_name: string;
   crime_count: number;
   risk_score: number;
+  population?: number;
+  literacy_rate?: number;
+  urbanization_pct?: number;
+  unemployment_pct?: number;
 }
 
 export interface SocioEconomicResponse {
   data: SocioEconomicPoint[];
 }
+
+export interface SocioEconomicInsights {
+  literacy_crime_correlation: number;
+  urbanization_crime_correlation: number;
+  unemployment_crime_correlation: number;
+  insights: string[];
+}
+

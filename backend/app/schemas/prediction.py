@@ -19,3 +19,21 @@ class RiskScoreOut(BaseModel):
     district_name: str
     risk_score: float
     risk_level: str
+
+
+class SocioEconomicOut(BaseModel):
+    district_id: int
+    district_name: str
+    crime_count: int
+    risk_score: float
+    population: int
+    literacy_rate: float
+    urbanization_pct: float
+    unemployment_pct: float
+
+
+class SocioEconomicInsightsOut(BaseModel):
+    literacy_crime_correlation: float
+    urbanization_crime_correlation: float
+    unemployment_crime_correlation: float
+    insights: list[str]

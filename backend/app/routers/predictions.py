@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import get_current_user, validate_scope
 from app.database import get_db
-from app.schemas.prediction import ForecastOut, RiskScoreOut
+from app.schemas.prediction import ForecastOut, RiskScoreOut, SocioEconomicInsightsOut
 from app.utils.cache import cache_get, cache_set
 
 router = APIRouter(prefix="/predictions", tags=["predictions"])
@@ -56,4 +56,18 @@ async def get_socio_economic(
     from app.services.prediction_service import get_socio_economic
     result = await get_socio_economic(db, district_id)
     await cache_set(cache_key, result, 3600)
+    return result
+
+
+@router.get("/socio-insights", response_model=SocioEconomicInsightsOut)
+async def get_socio_insights(
+    user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    cached = await cache_get("predictions:socio-insights")
+    if cached:
+        return cached
+    from app.services.prediction_service import get_socio_insights
+    result = await get_socio_insights(db)
+    await cache_set("predictions:socio-insights", result, 3600)
     return result

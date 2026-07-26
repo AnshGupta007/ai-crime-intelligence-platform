@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, DateTime, DECIMAL, Boolean, ForeignKey, Text, text
+from sqlalchemy import Column, Integer, String, Date, DateTime, DECIMAL, Boolean, ForeignKey, Text, Float, text
 
 from app.database import Base
 
@@ -74,3 +74,15 @@ class Alert(Base):
     data = Column(Text)
     is_read = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=text("NOW()"))
+
+
+class SocioEconomicData(Base):
+    __tablename__ = "socio_economic_data"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    district_id = Column(Integer, ForeignKey("districts.district_id"))
+    population = Column(Integer)
+    literacy_rate = Column(Float)
+    urbanization_pct = Column(Float)
+    unemployment_pct = Column(Float)
+    police_station_count = Column(Integer)
