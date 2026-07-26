@@ -1,7 +1,7 @@
 # 🛡️ AI Crime Intelligence & Predictive Analytics Platform
 
 > **Strategic AI-Powered Crime Intelligence Hub for Karnataka State Police (KSP)**  
-> Developed for the Economic Times Hackathon — Transforming siloed crime data into proactive, real-time spatial intelligence, criminal network discovery, and automated threat forecasting.
+> Transforming siloed crime data into proactive, real-time spatial intelligence, criminal network discovery, and automated threat forecasting.
 
 ---
 
@@ -526,7 +526,7 @@ The platform implements an extended relational FIR schema mapped from the **Karn
 
 This project is released under the **MIT License**.
 
-Designed and built for the **Economic Times Hackathon** in collaboration with technical frameworks inspired by the **Karnataka State Police (KSP) Strategic Intelligence Mandate**.
+Designed and built for the **Datathon Hackathon 2026** in collaboration with technical frameworks inspired by the **Karnataka State Police (KSP) Strategic Intelligence Mandate**.
 
 ---
 
