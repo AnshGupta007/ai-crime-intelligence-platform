@@ -1,7 +1,7 @@
 # 🛡️ AI Crime Intelligence & Predictive Analytics Platform
 
 > **Strategic AI-Powered Crime Intelligence Hub for Karnataka State Police (KSP)**  
-> Developed for the Economic Times Hackathon — Transforming siloed crime data into proactive, real-time spatial intelligence, criminal network discovery, and automated threat forecasting.
+> Transforming siloed crime data into proactive, real-time spatial intelligence, criminal network discovery, and automated threat forecasting.
 
 ---
 
